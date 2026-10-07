@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Sign in · VIBI Bank{% endblock %}
+{% block content %}
+<section class="auth-layout">
+  <div class="auth-story">
+    <div class="eyebrow">A smarter way to experience banking</div>
+    <h1>Your money.<br><span>Your momentum.</span></h1>
+    <p>Explore a clear, modern banking experience designed to put your everyday finances in focus.</p>
+    <div class="story-stat"><span class="story-icon">↗</span><span><strong>Built around you</strong><small>One simple view for your demo account</small></span></div>
+    <div class="story-stat"><span class="story-icon">⌁</span><span><strong>Always in sync</strong><small>Activity refreshes while you explore</small></span></div>
+  </div>
+  <div class="auth-card">
+    <div class="eyebrow">WELCOME BACK</div>
+    <h2>Sign in to VIBI</h2>
+    <p class="muted">Use your demo credentials to continue.</p>
+    <form method="post" class="form-stack">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label>Email address<input name="email" type="email" autocomplete="email" required maxlength="254" placeholder="you@example.com"></label>
+      <label>Password<input name="password" type="password" autocomplete="current-password" required maxlength="128" placeholder="Your password"></label>
+      <button class="button button-primary button-full" type="submit">Sign in <span>→</span></button>
+    </form>
+    <div class="form-foot">New to VIBI? <a href="{{ url_for('register') }}">Create a demo account</a></div>
+    <div class="secure-note"><span>⌑</span> Passwords are protected in this local demo.</div>
+  </div>
+</section>
+{% endblock %}

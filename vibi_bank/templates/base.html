@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#091b2c">
+  <title>{% block title %}VIBI Bank{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="{{ url_for('index') }}" aria-label="VIBI Bank home">
+      <span class="brand-mark">V</span>
+      <span>VIBI<span class="brand-light">BANK</span><small>YOUR MONEY, IN MOTION</small></span>
+    </a>
+    {% if session.get('user_id') %}
+      <div class="topbar-right">
+        <span class="demo-pill"><span></span> DEMO ENVIRONMENT</span>
+        <form action="{{ url_for('logout') }}" method="post">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="signout" type="submit">Sign out</button>
+        </form>
+      </div>
+    {% endif %}
+  </header>
+  <main>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <section class="notices" aria-live="polite">
+          {% for category, message in messages %}
+            <div class="notice notice-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        </section>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="site-footer">
+    <span>VIBI Bank · Local demonstration only</span>
+    <span>Never enter real banking credentials or personal financial information.</span>
+  </footer>
+</body>
+</html>

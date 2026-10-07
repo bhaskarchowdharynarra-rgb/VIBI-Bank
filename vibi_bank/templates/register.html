@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}Open a demo account · VIBI Bank{% endblock %}
+{% block content %}
+<section class="onboarding">
+  <div class="onboarding-heading">
+    <div class="eyebrow">VIBI PERSONAL BANKING · DEMO</div>
+    <h1>Open your account</h1>
+    <p>A few details help us set up your local demo profile. Use fictional information only.</p>
+    <div class="onboarding-progress" aria-label="Account setup: one step">
+      <span class="progress-step"><i>1</i> Your details</span>
+      <span class="progress-line"></span>
+      <span class="progress-step"><i>✓</i> Ready instantly</span>
+    </div>
+  </div>
+
+  <form method="post" class="onboarding-form">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <section class="onboarding-section">
+      <div class="onboarding-section-heading">
+        <span class="onboarding-icon">01</span>
+        <div><h2>Personal details</h2><p>Tell us who this demo profile belongs to.</p></div>
+      </div>
+      <div class="form-grid">
+        <label class="field-span">Full name
+          <input name="full_name" autocomplete="name" required minlength="2" maxlength="100"
+                 value="{{ form_values.get('full_name', '') }}" placeholder="Your full name">
+        </label>
+        <label>Email address
+          <input name="email" type="email" autocomplete="email" required maxlength="254"
+                 value="{{ form_values.get('email', '') }}" placeholder="you@example.com">
+        </label>
+        <label>Phone number <span class="label-hint">Include country code if needed</span>
+          <input name="phone" type="tel" autocomplete="tel" required minlength="7" maxlength="20"
+                 value="{{ form_values.get('phone', '') }}" placeholder="+91 98765 43210">
+        </label>
+        <label class="field-span">Password <span class="label-hint">10–128 characters</span>
+          <input name="password" type="password" autocomplete="new-password" required minlength="10"
+                 maxlength="128" placeholder="Create a unique demo password">
+        </label>
+      </div>
+    </section>
+
+    <section class="onboarding-section">
+      <div class="onboarding-section-heading">
+        <span class="onboarding-icon">02</span>
+        <div><h2>Mailing address</h2><p>Use a fictional address. This demo does not verify addresses.</p></div>
+      </div>
+      <div class="form-grid">
+        <label class="field-span">Street address
+          <input name="address" autocomplete="street-address" required minlength="5" maxlength="150"
+                 value="{{ form_values.get('address', '') }}" placeholder="House number and street">
+        </label>
+        <label>City or town
+          <input name="city" autocomplete="address-level2" required minlength="2" maxlength="80"
+                 value="{{ form_values.get('city', '') }}" placeholder="City">
+        </label>
+        <label>State or region
+          <input name="state" autocomplete="address-level1" required minlength="2" maxlength="80"
+                 value="{{ form_values.get('state', '') }}" placeholder="State or region">
+        </label>
+        <label>Postal code
+          <input name="postal_code" autocomplete="postal-code" required minlength="2" maxlength="12"
+                 value="{{ form_values.get('postal_code', '') }}" placeholder="Postal code">
+        </label>
+        <label>Country
+          <input name="country" autocomplete="country-name" required minlength="2" maxlength="60"
+                 value="{{ form_values.get('country', 'India') }}" placeholder="Country">
+        </label>
+      </div>
+    </section>
+
+    <section class="onboarding-section">
+      <div class="onboarding-section-heading">
+        <span class="onboarding-icon">03</span>
+        <div><h2>Choose your demo account</h2><p>Explore a sample account style. No fees, rates, or eligibility are represented.</p></div>
+      </div>
+      <div class="account-type-grid">
+        {% set selected_type = form_values.get('account_type', 'everyday') %}
+        <label class="account-type-card">
+          <input type="radio" name="account_type" value="everyday" required
+                 {% if selected_type == 'everyday' %}checked{% endif %}>
+          <span class="account-type-content">
+            <strong>Everyday</strong><small>Simple day-to-day demo banking</small>
+            <span class="account-type-feature">Transfers · activity · balance</span>
+          </span>
+        </label>
+        <label class="account-type-card">
+          <input type="radio" name="account_type" value="savings"
+                 {% if selected_type == 'savings' %}checked{% endif %}>
+          <span class="account-type-content">
+            <strong>Savings</strong><small>A savings-focused demo profile</small>
+            <span class="account-type-feature">Track a simulated balance</span>
+          </span>
+        </label>
+        <label class="account-type-card">
+          <input type="radio" name="account_type" value="student"
+                 {% if selected_type == 'student' %}checked{% endif %}>
+          <span class="account-type-content">
+            <strong>Student</strong><small>A student-themed demo profile</small>
+            <span class="account-type-feature">Explore everyday features</span>
+          </span>
+        </label>
+      </div>
+    </section>
+
+    <div class="onboarding-submit">
+      <label class="demo-acknowledgement">
+        <input type="checkbox" name="demo_acknowledgement" value="yes" required
+               {% if form_values.get('demo_acknowledgement') == 'yes' %}checked{% endif %}>
+        <span>I understand this creates a <strong>local software demo profile only</strong>, not a real bank account. I will not enter real personal, financial, or banking information.</span>
+      </label>
+      <button class="button button-primary button-full" type="submit">Create demo account <span>→</span></button>
+      <p class="form-foot">Already have a VIBI demo profile? <a href="{{ url_for('login') }}">Sign in</a></p>
+    </div>
+  </form>
+</section>
+{% endblock %}

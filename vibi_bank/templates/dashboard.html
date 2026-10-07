@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}Overview · VIBI Bank{% endblock %}
+{% block head %}<meta name="csrf-token" content="{{ csrf_token() }}"><script src="{{ url_for('static', filename='dashboard.js') }}" defer></script>{% endblock %}
+{% block content %}
+<div class="dashboard">
+  <section class="welcome-row">
+    <div><div class="eyebrow">PERSONAL BANKING · DEMO</div><h1>Good to see you, {{ account.name.split(' ')[0] }}.</h1><p>Your financial snapshot, all in one place.</p></div>
+    <div class="live-indicator"><span></span> LIVE DEMO DATA</div>
+  </section>
+  <section class="summary-grid">
+    <article class="balance-card">
+      <div class="card-label">TOTAL AVAILABLE BALANCE <span class="balance-chip">● Available</span></div>
+      <div class="balance-value"><span class="currency">₹</span><span id="balance">{{ account.balance }}</span></div>
+      <div class="account-line">VIBI {{ account.account_type|title }} · <span id="account-number">{{ account.account_number }}</span><button class="copy-button" type="button" data-copy="{{ account.account_number }}">Copy</button></div>
+      <div class="balance-bottom"><span>Account holder</span><strong>{{ account.name }}</strong><span class="balance-separator">·</span><span>Demo account</span></div>
+      <div class="card-decoration"></div>
+    </article>
+    <article class="side-card">
+      <div class="side-card-icon">↗</div><div class="side-card-label">YOUR ACCOUNT</div>
+      <h3>Ready when you are.</h3><p>Move demo funds between VIBI accounts or explore your activity.</p>
+      <span class="account-status"><i></i> {{ account.account_type|title }} demo account · Active</span>
+    </article>
+  </section>
+  <section class="actions-panel">
+    <div class="section-heading"><div><div class="eyebrow">EVERYDAY BANKING</div><h2>What would you like to do?</h2></div><span class="section-caption">All activity is simulated</span></div>
+    <div class="action-grid">
+      <article class="action-card"><div class="action-icon deposit-icon">↓</div><h3>Add demo funds</h3><p>Credit simulated funds to your demo balance.</p>
+        <form action="{{ url_for('transaction') }}" method="post" class="inline-form">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="deposit">
+          <label class="sr-only" for="deposit-amount">Amount to deposit</label><div class="amount-field"><span>₹</span><input id="deposit-amount" name="amount" inputmode="decimal" placeholder="0.00" required></div>
+          <button class="button button-outline" type="submit">Add funds <span>→</span></button>
+        </form>
+      </article>
+      <article class="action-card"><div class="action-icon withdraw-icon">↑</div><h3>Withdraw demo funds</h3><p>Remove simulated funds from your balance.</p>
+        <form action="{{ url_for('transaction') }}" method="post" class="inline-form">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="withdraw">
+          <label class="sr-only" for="withdraw-amount">Amount to withdraw</label><div class="amount-field"><span>₹</span><input id="withdraw-amount" name="amount" inputmode="decimal" placeholder="0.00" required></div>
+          <button class="button button-outline" type="submit">Withdraw <span>→</span></button>
+        </form>
+      </article>
+      <article class="action-card"><div class="action-icon transfer-icon">⇄</div><h3>Transfer between demos</h3><p>Send simulated funds to another VIBI demo account.</p>
+        <form action="{{ url_for('transaction') }}" method="post" class="inline-form">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="action" value="transfer">
+          <label class="sr-only" for="recipient-account">Recipient VIBI account number</label><input class="text-input" id="recipient-account" name="recipient_account" placeholder="Recipient account number" required maxlength="13">
+          <label class="sr-only" for="transfer-amount">Amount to transfer</label><div class="amount-field"><span>₹</span><input id="transfer-amount" name="amount" inputmode="decimal" placeholder="0.00" required></div>
+          <button class="button button-outline" type="submit">Review transfer <span>→</span></button>
+        </form>
+      </article>
+    </div>
+  </section>
+  <section class="lower-grid">
+    <article class="content-panel" id="activity">
+      <div class="section-heading compact"><div><div class="eyebrow">YOUR ACCOUNT</div><h2>Recent activity</h2></div><span class="sync-note"><i></i> Updates automatically</span></div>
+      <div class="transaction-list" id="transaction-list">
+        {% for item in transactions %}
+          <div class="transaction-row">
+            <span class="transaction-mark {% if item.type in ['deposit', 'transfer_received'] %}positive{% endif %}">{% if item.type in ['deposit', 'transfer_received'] %}↓{% else %}↑{% endif %}</span>
+            <span class="transaction-description"><strong>{{ item.description }}</strong><small>{{ item.created_at|replace('T', ' ')|replace('+00:00', ' UTC') }}</small></span>
+            <strong class="transaction-amount {% if item.type in ['deposit', 'transfer_received'] %}positive-text{% endif %}">{% if item.type in ['deposit', 'transfer_received'] %}+{% else %}−{% endif %}₹{{ item.amount }}</strong>
+          </div>
+        {% else %}
+          <div class="empty-state"><span>⌁</span><strong>No activity yet</strong><p>Demo transactions will show up here.</p></div>
+        {% endfor %}
+      </div>
+      <p class="sync-status" id="sync-status" aria-live="polite">Live demo updates are on.</p>
+    </article>
+    <article class="content-panel loans-panel" id="loans">
+      <div class="section-heading compact"><div><div class="eyebrow">VIBI LENDING · DEMO</div><h2>Explore a loan request</h2></div></div>
+      <p class="panel-intro">Try the eligibility flow from your original program. Requests are recorded for demonstration only; no loan is approved or funded.</p>
+      <form action="{{ url_for('loan') }}" method="post" class="form-stack loan-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <label>Request type<select name="loan_type" id="loan-type"><option value="education">Education</option><option value="gold">Gold pledge</option><option value="secured">Secured</option></select></label>
+        <label>Requested amount (INR)<input name="amount" inputmode="decimal" placeholder="0.00" required></label>
+        <label id="loan-details-label">Student status and two proofs <input name="details" id="loan-details" placeholder="student, ID card, admission letter" required maxlength="300"></label>
+        <p class="field-hint" id="loan-hint">Separate the details with commas.</p>
+        <button class="button button-dark" type="submit">Submit demo request <span>→</span></button>
+      </form>
+      <div class="loan-history" id="loan-history">
+        {% for item in applications %}
+          <div class="loan-history-row"><span>{{ item.type|title }} · ₹{{ item.amount }}</span><small>{{ item.status }}</small></div>
+        {% else %}
+          <div class="loan-history-empty">No demo requests yet.</div>
+        {% endfor %}
+      </div>
+    </article>
+  </section>
+  <div class="demo-disclaimer"><strong>Demo only.</strong> VIBI Bank here is a software demonstration, not a licensed financial institution. Balances, transfers, and loan requests are simulated and have no real-world monetary value.</div>
+</div>
+{% endblock %}

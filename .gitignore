@@ -1,0 +1,6 @@
+.venv/
+__pycache__/
+*.py[cod]
+vibi_bank.sqlite3
+vibi_bank.sqlite3-shm
+vibi_bank.sqlite3-wal
